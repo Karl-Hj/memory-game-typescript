@@ -1,0 +1,72 @@
+import { useEffect, useRef, useState } from "react";
+import { Cells } from "./components/Cells";
+import "../src/css/game.css";
+const InitalValue: number[] = Array.from(
+  { length: 30 },
+  (_, index) => index + 1
+);
+
+export function GameDisplay() {
+  const [cells, setCells] = useState<number[]>(InitalValue);
+  const checkCellRef = useRef<number>(1);
+  const [checkArray, setCheckArray] = useState<number[]>([1, 2, 3]);
+  const arrayLength = useRef<number>(3);
+  const [clickedCell, setClickedCell] = useState<number | undefined>(undefined);
+  const hiddenScoreRef = useRef<number>(0);
+
+  //Implementation of Fisher-Yets Algoritm
+  function shuffleArray() {
+    const shuffleCells = [...cells];
+    for (let i = shuffleCells.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffleCells[i], shuffleCells[j]] = [shuffleCells[j], shuffleCells[i]];
+    }
+    setCells(shuffleCells);
+  }
+
+  useEffect(() => {
+    //Checks if the clicked cell is the same value as in the checkArray list
+    if (clickedCell === checkArray[checkCellRef.current - 1]) {
+      checkCellRef.current += 1;
+      hiddenScoreRef.current += 1;
+
+      console.log("You clicked the right cell");
+      console.log(checkCellRef);
+    } else {
+      console.log("You clicked the wrong cell!");
+    }
+    if (checkCellRef.current > checkArray.length) {
+      console.log("Time for next Level");
+      nextLevel();
+    }
+    //Checkes if clickedCell is the same as the last value of the checkArray if so the level is completed
+  }, [clickedCell, checkArray]);
+
+  function nextLevel() {
+    arrayLength.current += 1;
+    hiddenScoreRef.current = 0;
+    checkCellRef.current = 1;
+
+    const newCheckArray = Array.from(
+      { length: arrayLength.current },
+      (_, index) => index + 1
+    );
+    setCheckArray(newCheckArray);
+    shuffleArray();
+    console.log(`This is the arraylength ${arrayLength.current}`);
+    console.log("This is the new array" + checkArray);
+  }
+
+  //Shuffles array at mount
+  useEffect(() => {
+    shuffleArray();
+  }, []);
+
+  return (
+    <div className="outer-container">
+      <div className="board-container">
+        <Cells cells={cells} setClickedCell={setClickedCell} />
+      </div>
+    </div>
+  );
+}
