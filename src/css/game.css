@@ -9,6 +9,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background: black;
 }
 
 .board-container {
@@ -24,6 +25,7 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 1px;
+  border: solid grey 1px;
 }
 
 .cell {
@@ -59,4 +61,39 @@
     box-shadow: inset 0 0 0px black, inset 0px 0 0px black,
       inset 0px 0 0px black;
   }
+}
+
+.level-text-container {
+  z-index: 200;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.level-text {
+  height: 30%;
+  width: 60%;
+  background: linear-gradient(
+    135deg,
+    rgba(160, 158, 158, 0.3),
+    rgba(123, 123, 121, 0.5)
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  color: white;
+}
+.level-button {
+  position: absolute;
+  bottom: 35%;
+  font-size: 1.5em;
+}
+
+.disable-click {
+  pointer-events: none;
+  cursor: not-allowed;
 }
