@@ -56,7 +56,7 @@ export function Cells({
   return (
     <div className="grid-container">
       {cells.map((cell, index) => {
-        const glow = numberOrderArray.some((element) => element === cell.id); //Itterades through array. If element is equal to cell, return true.
+        const glow = numberOrderArray.some((element) => element === cell.id); //Itterades through array . If element is equal to cell, return true.
         console.log(numberOrderArray);
         return (
           <div
