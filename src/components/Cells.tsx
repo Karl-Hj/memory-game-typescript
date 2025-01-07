@@ -17,52 +17,47 @@ export function Cells({
       ".cell"
     ) as NodeListOf<HTMLDivElement>;
 
-    const timeouts: number[] = [];
+    //Makes sure animation class is removed before next round
+    cellElements.forEach((cellElement) => {
+      cellElement.classList.remove("single-cell-glow");
+    });
 
-    const waitForCellRender = setTimeout(() => {
+    async function runCellAnimation() {
+      await new Promise((resolve) => setTimeout(resolve, 100));
       cellElements.forEach((element) => {
         element.classList.add("disable-click");
       });
-      //Delay added to make sure cells render at mount before check of data attribute
-      numberOrderArray.forEach((cellNumber, index) => {
+
+      // Delay added to make sure cells render at mount before check of data attribute
+      for (const cellNumber of numberOrderArray) {
         const cellElement = document.querySelector(
-          //Fetches the cell with the data attribut of numberOrderArray.current value
           `.cell.active[data-number="${cellNumber}"]`
         ) as HTMLDivElement;
 
         if (cellElement) {
-          // If it exists add single-cell-glow class with 1.5 sec delay.
-          const addGlowTimeOut = setTimeout(() => {
+          requestAnimationFrame(() => {
             cellElement.classList.add("single-cell-glow");
-          }, 1500 * index);
-          timeouts.push(addGlowTimeOut);
+          });
+          await new Promise((resolve) => setTimeout(resolve, 1500));
 
-          const removeGlowTimeOut = setTimeout(() => {
-            cellElement.classList.remove("single-cell-glow");
-          }, 1500 * index + 1500);
-          timeouts.push(removeGlowTimeOut);
+          cellElement.classList.remove("single-cell-glow");
         }
-      });
+      }
 
-      const totalDelayTime = 1500 * numberOrderArray.length + 100;
-      const removeClickTimeout = setTimeout(() => {
-        cellElements.forEach((element) => {
-          element.classList.remove("disable-click");
-        });
-      }, totalDelayTime);
-      timeouts.push(removeClickTimeout);
-    }, 100);
-    timeouts.push(waitForCellRender);
-    return () => {
-      timeouts.forEach((timeout) => clearTimeout(timeout));
-    };
+      // Återaktivera klick efter animationerna
+      cellElements.forEach((element) => {
+        element.classList.remove("disable-click");
+      });
+    }
+
+    runCellAnimation();
   }, [numberOrderArray]);
 
   return (
     <div className="grid-container">
       {cells.map((cell, index) => {
         const glow = numberOrderArray.some((element) => element === cell.id); //Itterades through array. If element is equal to cell, return true.
-
+        console.log(numberOrderArray);
         return (
           <div
             key={index}

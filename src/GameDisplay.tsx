@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Cells } from "./components/Cells";
 import "../src/css/game.css";
 import { LevelText } from "./components/LevelText";
+import { WelcomeText } from "./components/WelcomeText";
+import { Victory } from "./components/Victory";
 
 const InitalValue: { id: number; value: string }[] = Array.from(
   { length: 30 },
@@ -21,6 +23,8 @@ export function GameDisplay() {
   const [textPromt, setTextPromt] = useState<boolean>(false);
   const [failLevelText, setFailLevelText] = useState<boolean>(false);
   const [activeLevel, setActiveLevel] = useState<number>(1);
+  const [welcomeTextValue, setWelcomeTextValue] = useState<boolean>(true);
+  const [victory, setVictory] = useState<boolean>(false);
 
   //Implementation of Fisher-Yets Algoritm to shuffle array
   const shuffleArray = useCallback(() => {
@@ -30,6 +34,7 @@ export function GameDisplay() {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffleCells[i], shuffleCells[j]] = [shuffleCells[j], shuffleCells[i]];
       }
+
       return shuffleCells;
     });
   }, []);
@@ -73,7 +78,7 @@ export function GameDisplay() {
         setTextPromt(true);
       }
       if (numberOrderArray.length > 29) {
-        console.log("You won");
+        setVictory(true);
       }
     }
   }, [clickedCell, numberOrderArray]);
@@ -98,30 +103,39 @@ export function GameDisplay() {
     shuffleArray();
   }
 
-  // Shuffle array at mount
-  useEffect(() => {
+  function startGameButton() {
+    setWelcomeTextValue(false);
     shuffleArray();
-  }, [shuffleArray]);
+  }
 
   return (
-    <div className="outer-container">
-      <div className="board-container">
-        {textPromt ? (
-          <LevelText
-            failLevelText={failLevelText}
-            activeLevel={activeLevel}
-            nextLevelButton={nextLevelButton}
-            tryAgainButton={tryAgainButton}
-          />
-        ) : (
-          ""
-        )}
-        <Cells
-          cells={cells}
-          setClickedCell={setClickedCell}
-          numberOrderArray={numberOrderArray}
-        />
+    <>
+      <div className="outer-container">
+        <h1 className="title">Sequence Game</h1>
+        <div className="board-container">
+          {welcomeTextValue ? (
+            <WelcomeText startGameButton={startGameButton} />
+          ) : (
+            <>
+              {textPromt && (
+                <LevelText
+                  failLevelText={failLevelText}
+                  activeLevel={activeLevel}
+                  nextLevelButton={nextLevelButton}
+                  tryAgainButton={tryAgainButton}
+                />
+              )}
+              <Cells
+                cells={cells}
+                setClickedCell={setClickedCell}
+                numberOrderArray={numberOrderArray}
+              />
+            </>
+          )}
+        </div>
+        <div className="highscore">Level: {activeLevel}</div>
+        {victory ? <Victory /> : ""}
       </div>
-    </div>
+    </>
   );
 }

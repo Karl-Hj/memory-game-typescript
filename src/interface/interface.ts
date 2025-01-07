@@ -10,3 +10,7 @@ export interface TextLevel {
   nextLevelButton: () => void;
   tryAgainButton: () => void;
 }
+
+export interface StartGame {
+  startGameButton: () => void;
+}
